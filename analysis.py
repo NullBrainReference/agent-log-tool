@@ -173,7 +173,7 @@ def red_units_usage(actions: pd.DataFrame):
 def plot_red_units_usage(actions: pd.DataFrame):
     usage = red_units_usage(actions)
 
-    usage.plot(kind="bar", stacked=True, figsize=(12,6), colormap="tab20")
+    usage.plot(kind="bar", stacked=False, figsize=(12,6), colormap="tab20")
     plt.xlabel("Game ID")
     plt.ylabel("Количество действий")
     plt.title("Интенсивность использования юнитов красной команды по играм")
@@ -183,18 +183,28 @@ def plot_red_units_usage(actions: pd.DataFrame):
 
     print("Таблица использования юнитов:\n", usage)
 
-
+def slice_games(games, actions, events, start_id=None, end_id=None):
+    if start_id is not None:
+        games = games[games["id"] >= start_id]
+        actions = actions[actions["game_id"] >= start_id]
+        events = events[events["game_id"] >= start_id]
+    if end_id is not None:
+        games = games[games["id"] <= end_id]
+        actions = actions[actions["game_id"] <= end_id]
+        events = events[events["game_id"] <= end_id]
+    return games, actions, events
 
 if __name__ == "__main__":
     games, actions, events = load_data()
+    games, actions, events = slice_games(games, actions, events, start_id=28, end_id=50)
     print("Loaded:", len(games), "games")
     # analyze_winrate(games)
     # plot_score_trend(games)
 
-    # plot_heals(events)
+    plot_heals(events)
     plot_attack_ratio(events)
     plot_attacks_by_team(actions)
-    # plot_red_leader_heals_vs_damage(actions, events)
+    plot_red_leader_heals_vs_damage(actions, events)
     plot_red_attack_efficiency(actions, events)
     plot_red_attack_share(actions)
     plot_red_units_usage(actions)
