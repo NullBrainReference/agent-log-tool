@@ -194,6 +194,14 @@ def slice_games(games, actions, events, start_id=None, end_id=None):
         events = events[events["game_id"] <= end_id]
     return games, actions, events
 
+def cut_loses(games, actions, events):
+    games = games[games["result"] == "win"]
+
+    win_ids = games["id"].unique()
+    actions = actions[actions["game_id"].isin(win_ids)]
+    events = events[events["game_id"].isin(win_ids)]
+    return games, actions, events
+
 if __name__ == "__main__":
     games, actions, events = load_data()
     games, actions, events = slice_games(games, actions, events, start_id=28, end_id=50)
